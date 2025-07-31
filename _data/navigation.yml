@@ -1,6 +1,8 @@
 header:
   - title: Home
     url: /home.html
+  - title: CTF
+    url: /ctf.html
   - title: Archive
     url: /archive.html
 

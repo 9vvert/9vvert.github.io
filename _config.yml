@@ -215,6 +215,12 @@ defaults:
       show_subscribe: true
       pageview: true
 
+collections:
+  ctf:
+    output: true
+  ctf-vol1:
+    output: true
+    
 
 ## => Plugins
 ##############################
