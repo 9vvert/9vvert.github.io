@@ -11,9 +11,6 @@
 #    |  |  \   --. /  .'.  \  |  |
 #    `--'   `----''--'   '--' `--'
 
-
-
-
 ## => Site Settings
 ##############################
 text_skin: default # "default" (default), "dark", "forest", "ocean", "chocolate", "orange"
@@ -23,6 +20,7 @@ baseurl : # does not include hostname
 title   : 9vvert's Home
 description: > # this means to ignore newlines until "Language & timezone"
   Your Site Description
+
 
 
 ## => Language and Timezone
