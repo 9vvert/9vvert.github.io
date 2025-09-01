@@ -2,7 +2,7 @@
 layout: article
 title: TFCCTF/Rev custom.ttf
 aside:
-    true
+  toc: true
 ---
 
 ### 0x1 打开.ttf文件
