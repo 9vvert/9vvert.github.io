@@ -1,6 +1,6 @@
 ---
 layout: article
-title: whyCTF/Rev Havker Event DB
+title: whyCTF/Rev Hacker Event DB
 aside:
   toc: true
 ---
