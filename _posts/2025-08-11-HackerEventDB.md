@@ -2,6 +2,7 @@
 title: HackerEventDB
 categories: [ctf2025, whyCTF]
 tags: [reverse, vm]
+toc: false
 ---
 ### 0x1 程序初探
 程序需要一个参数，附件额外给了两个数据库，其中用第一个会输出一些条目信息，第二个则会开启一个彩色的终端Box,提示输入10位密码

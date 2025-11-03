@@ -2,6 +2,7 @@
 title: custom.ttf
 categories: [ctf2025, TFCCTF]
 tags: [reverse, misc, new-format]
+toc: false
 ---
 
 ### 0x1 打开.ttf文件
