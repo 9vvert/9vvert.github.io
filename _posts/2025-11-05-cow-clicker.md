@@ -13,13 +13,17 @@ toc: false
 
 下载main.dart.wasm，然后用ghidra wasm plugin或者wasm2wat，但都无法打开。
 
-赛后有大佬解释了原因：
-> Yeah https://github.com/WebAssembly/wabt/issues/2348, basically use https://github.com/bytecodealliance/wasm-tools instead
+> 赛后有大佬解释了原因：
+```
+Yeah https://github.com/WebAssembly/wabt/issues/2348, basically use https://github.com/bytecodealliance/wasm-tools instead
+```
+{: .prompt-info }
 
 接下来需要进一步分析wasm文件。
 
 >能否直接找flag相关逻辑？
 如果最后的flag是向外部请求，能否直接搜索http关键字？（失败，而且最后可能是本地解密）
+{: .prompt-tip }
 
 但是顺着这个思路，搜索关键词1000000000，大约有20个匹配的结果，但是大部分都是f64类型。重点关注其中的i64类型，找到了比较跳转逻辑：
 ![](/assets/ctf/2025/cow_clicker_search_const.png)
@@ -64,12 +68,14 @@ toc: false
 
 
 >既然无法直接用控制台改变已经固定的wasm相关逻辑，那就直接从源头修改wasm
+{: .prompt-tip }
 
 
 ### 0x02 使用Burpsuite拦截替换wasm response
 最容易想到的是直接把第二个判断`i64.ge_s`改成`i64.lt_s`，
 
 > 在Burpsuite尝试抓包的时候，需要清除前面的缓存，否则某些资源可能会从本地拿取。但是浏览器缓存也有好处，当自己完成一次缓存投毒后，接下来的访问就不用每次都进行修改，即可自动使用修改后的wasm
+{: .prompt-warning }
 
 然而只是出现了一个flag checker:
 
