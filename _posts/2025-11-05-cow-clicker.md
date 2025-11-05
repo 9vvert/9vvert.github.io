@@ -69,15 +69,118 @@ toc: false
 ### 0x02 使用Burpsuite拦截替换wasm response
 最容易想到的是直接把第二个判断`i64.ge_s`改成`i64.lt_s`，
 
+> 在Burpsuite尝试抓包的时候，需要清除前面的缓存，否则某些资源可能会从本地拿取。但是浏览器缓存也有好处，当自己完成一次缓存投毒后，接下来的访问就不用每次都进行修改，即可自动使用修改后的wasm
 
-> test
-{: .info }
+然而只是出现了一个flag checker:
 
-> test
-{: .tip }
+![](/assets/ctf/2025/cow_clicker_checker.png)
 
-> test
-{: .warning }
+输入失败会显示“doesn't seem correct”
+直接复制dev tool解析的wasm代码，然后全文搜索关键词：
+```
+......
+ (global $S.Good_job!_You_got_the_flag!_Mo0o0oo0oo! (;4082;) (import "S" "Good job! You got the flag! Mo0o0oo0oo!") externref)
+(global $S.Nah__doesn't_seem_correct. (;4083;) (import "S" "Nah, doesn't seem correct.") externref)
+......
+(global $global13580 (ref $type560) (i32.const 1536) (i32.const 0) (ref.null none) (i32.const 1509) (i32.const 0) (ref.null none) (i32.const 4) (i32.const 0) (global.get $S.Good_job!_You_got_the_flag!_Mo0o0oo0oo!) (struct.new $type2) (ref.null none) (ref.null none) (ref.null none) (ref.null none) (struct.new $type559) (ref.null none) (struct.new $type560))
+(global $global13581 (ref $type560) (i32.const 1536) (i32.const 0) (ref.null none) (i32.const 1509) (i32.const 0) (ref.null none) (i32.const 4) (i32.const 0) (global.get $S.Nah__doesn't_seem_correct.) (struct.new $type2) (ref.null none) (ref.null none) (ref.null none) (ref.null none) (struct.new $type559) (ref.null none) (struct.new $type560))
+```
+上面的代码应该是定义了一些常量，下面用常量来初始化一些object （可能是窗口函数的资源加载）
 
-> test
-{: .danger }
+接着搜索 `$global13580`和`$global13581`:
+```
+  (func $func8329 (param $var0 (ref struct)) (result (ref null $type0))
+    (local $var1 (ref $type281))
+    (local $var2 (ref $type1595))
+    (local $var3 (ref $type2))
+    (local $var4 (ref $type2))
+    local.get $var0
+    ref.cast $type1595
+    local.tee $var2
+    struct.get $type1595 $field0
+    local.tee $var1
+    struct.get $type281 $field14
+    local.get $var2
+    struct.get $type1595 $field1
+    ref.as_non_null
+    call $func1520
+    call $strcat_func743
+    local.get $var1
+    struct.get $type281 $field15
+    call $strcat_func743
+    local.set $var3
+    block $label1 (result i32)
+      block $label0
+        local.get $var1
+        struct.get $type281 $field13
+        call $func4803
+        local.tee $var4
+        struct.get $type2 $field0
+        i32.const 4
+        i32.ne
+        br_if $label0
+        local.get $var3
+        struct.get $type2 $field2
+        local.get $var4
+        struct.get $type2 $field2
+        call $wasm:js-string.equals
+        i32.eqz
+        br_if $label0
+        i32.const 1
+        br $label1
+      end $label0
+      i32.const 0
+    end $label1
+    if (result (ref $type561))
+      local.get $var1
+      call $func4099
+      call $func8330
+      global.get $global13580           // object initialized with "good job"
+      call $func8332
+    else
+      local.get $var1
+      call $func4099
+      call $func8330
+      global.get $global13581           // object initialized with "doesn't correct"
+      call $func8332
+    end
+```
+wasm中的if会根据栈上的值来判断，通常由上一步来设置。这里显然有`call $wasm:js-string.equals`
+调试后发现这里的数据`v1t{xxxx}`，中间是乱码，猜测可能是数据解密和counter有关，验证发现确实如此.
+
+> TODO 
+
+### 0x03 二次patch
+接下来尝试修改数据。
+尝试寻找`local $var2`的源头，但是一层层向上追踪，实在不容易找到。
+能不能直接修改`var2`来实现对counter的修改呢？毕竟为了效率，对于object的参数传递一般都是引用，可以一试。
+
+最适合的地方就是`i64.ge_s`前面的一段代码，是`struct.get`，可以尝试置换成`struct.set`
+
+把
+```
+local.get $var2
+struct.get $type281 $field7   
+i64.const64 1000000000
+i64.ge_s
+if
+    ...
+end
+```
+修改成
+```
+local.get $var2
+i64.const64 1000000000
+struct.set $type281 $field7   
+nop
+nop
+nop(忘了几个nop了，反正就就是把if给覆盖掉)
+    ...
+nop
+```
+以前没怎么接触过wasm字节码，但是可以模仿其它的指令字节码，比如把 `struct.get`变成`struct.set`只需要修改指令的第二个字节。
+
+另外发现wasm中的if指令没有指定跳转的目标地址，原来是使用`if - end`配对机制，所以需要把后面的`end`对应`0x0B`字节也给patch掉
+
+接着再次替换，调试即可获得flag
+![](/assets/ctf/2025/cow_clicker_success.png)
