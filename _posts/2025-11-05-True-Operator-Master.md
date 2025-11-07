@@ -174,7 +174,7 @@ with open(bin_path, 'rb') as f:
 注意到所有的函数进行反编译后都是简单的return表达式，因此尝试直接调用api获得反编译文本，然后根据特征重命名。
 
 > 这里还没有到最后的neat环节，所以重复的运算符没有必要去除，保留着甚至可能会利于分析。当时我正是考虑到这一点，增加了index后缀。后来事实证明这个后缀对ida script debug起了很大作用！
-{: .prompt-warn }
+{: .prompt-warning }
 ```python
 import idautils
 import idaapi
