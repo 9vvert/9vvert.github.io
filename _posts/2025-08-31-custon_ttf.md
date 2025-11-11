@@ -1,5 +1,5 @@
 ---
-title: custom.ttf
+title: tfcCTF - custom.ttf
 categories: [ctf2025, TFCCTF]
 tags: [reverse, misc, new-format]
 toc: false

@@ -1,5 +1,5 @@
 ---
-title: HackerEventDB
+title: whyCTF - HackerEventDB
 categories: [ctf2025, whyCTF]
 tags: [reverse, vm]
 toc: false

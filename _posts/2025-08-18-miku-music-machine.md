@@ -1,5 +1,5 @@
 ---
-title: Miku Music Machine 
+title: sekaiCTF - Miku Music Machine 
 categories: [ctf2025, sekaiCTF]
 tags: [reverse, xfg-protect, maze]
 toc: false
