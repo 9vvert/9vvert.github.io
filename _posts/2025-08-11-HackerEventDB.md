@@ -143,7 +143,8 @@ __int64 __fastcall parse(__int64 a1)
 
 接下来认真分析其中的一些指令：
 - pop类型
-```
+
+```c
 debug003:00001337C0DE0200 pop_rax_1337C0DE0200 proc near
 debug003:00001337C0DE0200                 pop     rax
 debug003:00001337C0DE0201                 retn
