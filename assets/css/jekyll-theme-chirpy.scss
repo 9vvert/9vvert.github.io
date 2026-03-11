@@ -1,61 +1,39 @@
+---
+---
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
 body {
-  /* Prefer Maple Mono when available; fall back to monospace stack */
   font-family: 'Maple Mono', 'Space Mono', 'Courier New', Courier, monospace;
-  // font-family: 'Maple Mono';
 }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: normal;
-//   font-weight: 400;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-Regular.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: italic;
-//   font-weight: 400;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-Italic.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: normal;
-//   font-weight: 700;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-Bold.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: italic;
-//   font-weight: 700;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-BoldItalic.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: normal;
-//   font-weight: 400;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-NF-CN-Regular.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: italic;
-//   font-weight: 400;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-NF-CN-Italic.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: normal;
-//   font-weight: 700;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-NF-CN-Bold.woff2') format('woff2');
-// }
-// @font-face {
-//   font-family: 'Maple Mono';
-//   font-style: italic;
-//   font-weight: 700;
-//   font-display: swap;
-//   src: url('/assets/lib/maple-mono/MapleMono-NF-CN-BoldItalic.woff2') format('woff2');
-// }
+
+.sakana-dock {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.sakana-dock .sakana-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto;
+  transform-origin: 100% 100%;
+}
+
+@media (max-width: 768px) {
+  .sakana-dock .sakana-box {
+    transform: scale(0.72);
+  }
+}
