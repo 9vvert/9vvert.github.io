@@ -653,6 +653,7 @@ while True:
         print("good")
 ```
 最后成功获得shell.
+![](/assets/ctf/2026/pwn_the_time_war_success.png)
 
 附上别人@`nirvanaK`的解法：
 ```python
