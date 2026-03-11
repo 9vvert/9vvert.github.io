@@ -1,18 +1,35 @@
 <div class="sakana-dock" aria-hidden="true">
-  <div class="sakana-box"></div>
+  <div class="sakana-box" id="sakana-box-1"></div>
+  <div class="sakana-box" id="sakana-box-2"></div>
 </div>
 
-<script src="{{ '/assets/js/sakana.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/sakana-custom.js' | relative_url }}"></script>
 <script>
   window.addEventListener('load', function () {
-    if (typeof Sakana === 'undefined' || !document.querySelector('.sakana-box')) return;
-
     Sakana.setMute(true);
-    Sakana.init({
-      el: '.sakana-box',
-      character: 'takina',
-      scale: 0.35,
-      canSwitchCharacter: true
-    });
+
+    function mountSakana(selector, imageUrl, scale, springScale, characterBottom) {
+      const box = document.querySelector(selector);
+      if (typeof Sakana === 'undefined' || !box) return;
+
+      box.style.setProperty('--sakana-character-bottom', characterBottom);
+
+      Sakana.init({
+        el: box,
+        character: 'takina',
+        scale: scale,
+        decay: 0.94,
+        springScale: springScale,
+        canSwitchCharacter: false
+      });
+
+      const characterEl = box.querySelector('.sakana-character');
+      if (characterEl) {
+        characterEl.style.backgroundImage = "url('" + imageUrl + "')";
+      }
+    }
+
+    mountSakana('#sakana-box-2', "{{ '/assets/toy/y2.png' | relative_url }}", 0.5, 1 / 3, '100px');
+    mountSakana('#sakana-box-1', "{{ '/assets/toy/y1.png' | relative_url }}", 0.62, 0.5, '120px');
   });
 </script>

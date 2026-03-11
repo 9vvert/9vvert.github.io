@@ -25,15 +25,56 @@ body {
 }
 
 .sakana-dock .sakana-box {
+  width: 500px;
+  height: 800px;
   position: absolute;
+  bottom: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+
+#sakana-box-1 {
+  right: -9rem;
+}
+
+#sakana-box-2 {
+  right: 3rem;
+}
+
+.sakana-dock .sakana-box canvas {
+  position: absolute;
+  left: 0;
   right: 0;
   bottom: 0;
+  pointer-events: none;
+}
+
+.sakana-dock .sakana-character {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: var(--sakana-character-bottom, 100px) !important;
+  cursor: pointer;
   pointer-events: auto;
-  transform-origin: 100% 100%;
+  transform-origin: 50% 400px;
+  background-repeat: no-repeat !important;
+  background-position: center bottom !important;
+  background-size: contain !important;
 }
 
 @media (max-width: 768px) {
   .sakana-dock .sakana-box {
     transform: scale(0.72);
+  }
+
+  #sakana-box-1 {
+    right: -6.5rem;
+  }
+
+  #sakana-box-2 {
+    right: 1.25rem;
   }
 }
