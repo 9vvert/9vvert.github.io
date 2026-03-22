@@ -175,7 +175,7 @@ LLM跑的opcode总结：
 
 参考自Axura's Blog以及CTF wiki:
 > https://4xura.com/binex/heap/large-bin-attack/
-https://ctf-wiki.org/pwn/linux/user-mode/heap/ptmalloc2/large-bin-attack/
+> https://ctf-wiki.org/pwn/linux/user-mode/heap/ptmalloc2/large-bin-attack/
 
 pmalloc中有63个large bin:
 ```
