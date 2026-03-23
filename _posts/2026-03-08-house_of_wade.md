@@ -1,7 +1,7 @@
 ---
 title: approvCTF - house-of-wade
 categories: [ctf2026, approvCTF]
-tags: [pwn, heap]
+tags: [pwn, heap, UAF, tcache]
 ---
 
 ### 0x01 analyze
