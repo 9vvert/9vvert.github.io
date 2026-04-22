@@ -36,3 +36,10 @@ sudo pacman -Syy	# 刷新缓存
 ```
 AI给的回答是：aur作为系统包，很多设置是围绕系统里的python设置的，因此安装的时候最好不要在虚拟环境中进行.
 进行`uv deactivate`后，成功安装.
+
+### 新terminal的“working-dir inherit”
+目前使用的环境是niri + ghostty，绑定`super + u`来启动一个新的terminal
+但是这种launch方法本身并不支持环境继承（因为其致力于在任意情况下启动新的terminal，有时候focus并不在某一个现有的terminal上面，所以只能用一些通用的方法）
+后来发现ghostty本身默认的快捷键有`ctrl+shift+n`启动新window,并且会继承工作目录.
+
+[TODO]能否用一个命令自动判断两种情况？虽然在niri中能够捕捉focus的窗口并判断，但是ghostty的行为似乎有些古怪，比如可能在一个`~/abc`的ghostty terminal中按下后，第一个instance还是在`~`；但是再切回`~/abc`启动第二个，就会开始继承了. 还有待探索
