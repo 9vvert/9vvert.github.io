@@ -1,6 +1,6 @@
 ---
 title: System Tips - Vol1
-categories: [tips, system]
+categories: [system, tips]
 tags: [trick, system]
 ---
 
