@@ -1,6 +1,6 @@
 ---
 title: Game Reverse - Steins;Gate Unpack 
-categories: [Game, rev]
+categories: [GameReverse]
 tags: [game, tool]
 ---
 
