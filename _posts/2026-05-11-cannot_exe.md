@@ -271,7 +271,7 @@ LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
 ```
 经过试验可以发现，泄露的第2个dword属于ld-linux.so.2中，而且其值和ld-base差值固定: `0xf7f82460 - 0xf7f67000 = 0x1b460`.
 
-有了ld的地址后，就能够构造bss段上的rop链了. 接下来控制第一次的read@plt. 我们能够从buf = $ebp-0x10开始，写入0x1c字节，
+有了ld的地址后，就能够构造bss段上的rop链了. 接下来控制第一次的read@plt. 我们能够从buf = $ebp-0x10开始，写入0x1c字节， (但是后续发现直接在stack上构造更方便)
 ```
 pwndbg> x/20wx $ebp-0x10
 0xff87c4c8:     0x00000040      0xf7f18fec      0xff87c52c      0x08049084
