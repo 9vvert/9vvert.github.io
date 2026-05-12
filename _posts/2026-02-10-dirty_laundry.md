@@ -2,7 +2,6 @@
 title: pragyanCTF - dirty_laundry
 categories: [ctf2026, pragyanCTF]
 tags: [pwn, ret2libc]
-toc: false
 ---
 
 没有防护，直接栈溢出
@@ -292,3 +291,73 @@ exploit(p, system_addr, binsh_addr)
 总结：pwntools中设置gdb调试+指定libc/ld的方法：
 1. 设置context.terminal
 2. 用process启动程序的时候，用ld发起，并使用参数列表：`[ld_path, "--library-path", libc_dir, elf.path]`
+
+### 补充: pwntools + gdb集成模板
+```python
+#!/usr/bin/env python3
+import sys
+
+# record arg before importing pwntools(which will comsume the DEBUG arg)
+RAW_ARGS = tuple(sys.argv[1:])
+
+from pwn import *
+import os
+import shutil
+
+elf = ELF("./a.out", checksec=False)
+
+ld_path = "./lib/ld-linux-x86-64.so.2"
+libc_dir = os.path.abspath("./lib")
+
+HOST = "some.website"
+PORT = 1337
+SSL = False
+
+context.binary = elf
+context.gdb_binary = "/usr/local/bin/pwndbg"
+
+if os.environ.get("TMUX"):
+    context.terminal = ["tmux", "splitw", "-h"]
+elif os.environ.get("DISPLAY"):
+    for terminal in ("ghostty", "alacritty", "kitty", "konsole"):
+        if shutil.which(terminal):
+            context.terminal = [terminal, "-e"]
+            break
+
+gdbscript = r"""
+set pagination off
+set breakpoint pending on
+set auto-solib-add on
+c
+"""
+
+def start():
+    def has_flag(name):
+        return name in RAW_ARGS or any(arg.startswith(name + "=") for arg in RAW_ARGS)
+
+    remote_enabled = has_flag("REMOTE") or bool(args.REMOTE)
+    debug_enabled = (
+        has_flag("DEBUG")
+        or has_flag("GDB")
+        or bool(args.DEBUG)
+        or bool(args.GDB)
+    )
+
+    if remote_enabled:
+        return remote(HOST, PORT, ssl=SSL)
+
+    if debug_enabled:
+        p = process([ld_path, "--library-path", libc_dir, elf.path])
+        log.info("Attaching gdb using terminal: %r", context.terminal)
+        gdb.attach(p, gdbscript=gdbscript)
+        return p
+
+    return process([ld_path, "--library-path", libc_dir, elf.path])
+
+
+p = start()
+
+# ===== exploit here =====
+
+p.interactive()
+```

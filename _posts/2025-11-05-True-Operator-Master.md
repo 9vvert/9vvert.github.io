@@ -2,7 +2,6 @@
 title: n1CTF - True Operator Master
 categories: [ctf2025, n1CTF]
 tags: [reverse, junk-code, script, control-flow-flattening, constraint-solving]
-toc: false
 ---
 
 ### 0x01 初步分析：控制流混淆，花指令，运算符重载

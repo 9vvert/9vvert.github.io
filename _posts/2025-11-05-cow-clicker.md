@@ -2,7 +2,6 @@
 title: v1tCTF - cow clicker
 categories: [ctf2025, v1tCTF]
 tags: [reverse, web, misc, new-format]
-toc: false
 ---
 
 ### 0x01

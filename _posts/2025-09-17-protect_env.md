@@ -2,7 +2,6 @@
 title: FortIDCTF - protect_env
 categories: [ctf2025, FortIDCTF]
 tags: [pwn, system]
-toc: false
 ---
 
 

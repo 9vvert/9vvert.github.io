@@ -2,7 +2,6 @@
 title: BuckeyCTF - square cipher
 categories: [ctf2025, buckeyCTF]
 tags: [reverse, z3]
-toc: false
 ---
 
 ```python

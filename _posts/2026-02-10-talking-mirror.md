@@ -2,7 +2,6 @@
 title: pragyanCTF - talking-mirror
 categories: [ctf2026, pragyanCTF]
 tags: [pwn, format-str]
-toc: false
 ---
 
 格式化字符串漏洞，但是这一题只会执行一次输入，也就是说，没有“泄露信息”的机会。
