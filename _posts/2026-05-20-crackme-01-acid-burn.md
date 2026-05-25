@@ -1,5 +1,5 @@
 ---
-title: Crackme vol1: 01-acid-burn
+title: Crackme vol1 -- 01-acid-burn
 categories: [reverse-chal, crackme]
 tags: [reverse, crackme, windows]
 ---
