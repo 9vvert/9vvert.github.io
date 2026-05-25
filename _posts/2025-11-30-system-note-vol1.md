@@ -1,7 +1,7 @@
 ---
-title: Daily Tips - Vol1
-categories: [tips, '2025']
-tags: [trick]
+title: System Misc Note - Vol3
+categories: [note, system]
+tags: [note, system]
 ---
 
 ### hyprland中全屏

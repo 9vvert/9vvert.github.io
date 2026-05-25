@@ -1,7 +1,7 @@
 ---
-title: Daily Tips - Vol2
-categories: [tips, '2026']
-tags: [trick]
+title: System Misc Note - Vol2
+categories: [note, syste,]
+tags: [note, system]
 ---
 
 ### 用patchelf设置binary路径
