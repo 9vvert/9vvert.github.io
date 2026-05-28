@@ -528,6 +528,11 @@ would be
 /bin -> /usr/bin
 ```
 
+You may be confused: since the binary in /usr/bin is actually linked to `/nix/...`, after chroot, will it be broken? In fact, the `/nix` dir is also included, so everything is fine.
+```
+--bind /nix /nix
+```
+
 #### Step2: link /etc
 Since our NixOS also use `/etc` as config directory, it doesn't directly link the whole `/etc`.
 
