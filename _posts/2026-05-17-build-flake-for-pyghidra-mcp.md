@@ -1,5 +1,5 @@
 ---
-title: Building flake.nix for pyghidra-mcp
+title: NixOS-03 Building flake.nix for pyghidra-mcp
 categories: [NixOS]
 tags: [system, nixos]
 ---
