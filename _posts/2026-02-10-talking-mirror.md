@@ -1,6 +1,6 @@
 ---
 title: pragyanCTF - talking-mirror
-categories: [ctf, c2026, pragyanCTF]
+categories: [ctf, vol1-2026, pragyanCTF]
 tags: [pwn, format-str]
 ---
 
