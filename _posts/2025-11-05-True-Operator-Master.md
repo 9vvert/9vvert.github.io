@@ -1,6 +1,6 @@
 ---
 title: n1CTF - True Operator Master
-categories: [ctf, vol-2025, n1CTF]
+categories: [ctf, c2025, n1CTF]
 tags: [reverse, junk-code, script, control-flow-flattening, constraint-solving]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: lactf - pwn-the-time-war
-categories: [ctf, vol-2026, lactf]
+categories: [ctf, c2026, lactf]
 tags: [pwn, ROP]
 ---
 这一题是赛后做出来的（而且一开始没注意到srand的种子是clock_gettime的地址，感觉无从下手）。感觉比前面的tcademy和adventure都简单，但是比赛过程中这一题解出的人反而比较少，应该这一题需要大量枚举，打远程环境网络不好太折磨了。

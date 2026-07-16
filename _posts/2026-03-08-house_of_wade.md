@@ -1,6 +1,6 @@
 ---
 title: approvCTF - house-of-wade
-categories: [ctf, vol-2026, approvCTF]
+categories: [ctf, c2026, approvCTF]
 tags: [pwn, heap, UAF, tcache]
 ---
 
