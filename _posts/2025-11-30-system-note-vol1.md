@@ -1,7 +1,7 @@
 ---
 title: System Misc Note - Vol3
-categories: [note, misc]
-tags: [note, system]
+categories: [sys-note, misc]
+tags: [sys-note, system]
 ---
 
 ### hyprland中全屏

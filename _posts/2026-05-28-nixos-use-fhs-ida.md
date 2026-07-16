@@ -1,6 +1,6 @@
 ---
 title: NixOS-04 Constructing fhs in NixOS, and run ida pro
-categories: [note, NixOS]
+categories: [sys-note, NixOS]
 tags: [system, nixos]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: 《逆向工程核心原理》：API钩取（上）
-categories: [learn, book, core-reverse]
+categories: [learn-note, book, core-reverse]
 tags: [reverse, windows, hook]
 ---
 
