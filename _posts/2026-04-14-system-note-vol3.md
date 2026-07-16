@@ -273,3 +273,20 @@ sudo modprobe vmnet
 ```
 无错误。
 重启后VMWare网络正常工作
+
+### vultr代理服务器失效排查
+某天我的代理服务器突然失效了，起初怀疑是被校园网封ip了，但是切换成流量发现也ping不通，因此也无法ssh登录。
+
+在vultr instance界面可以开启一个终端，执行tcpdump，监听icmp包：
+```
+sudo tcpdump -ni any icmp
+```
+然后在我的本机开始ping, 看到服务器端有一些 in / out, 证明服务器能够正常接受并发包，但是其流量发不过来.
+
+在本机用下列命令查看本地的公网ip:
+```
+curl -4 ifconfig.me
+```
+经过对比，确实就是服务器中reply的目的地址，没有发错.
+
+大概率是ip被墙了
