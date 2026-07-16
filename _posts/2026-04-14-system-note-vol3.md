@@ -1,6 +1,6 @@
 ---
 title: System Misc Note - Vol3
-categories: [note, system]
+categories: [note, misc]
 tags: [note, system]
 ---
 

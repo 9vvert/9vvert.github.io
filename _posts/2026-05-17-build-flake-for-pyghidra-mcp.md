@@ -1,6 +1,6 @@
 ---
 title: NixOS-03 Building flake.nix for pyghidra-mcp
-categories: [NixOS]
+categories: [note, NixOS]
 tags: [system, nixos]
 ---
 

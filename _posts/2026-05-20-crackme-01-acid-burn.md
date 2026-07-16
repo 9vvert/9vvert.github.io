@@ -1,6 +1,6 @@
 ---
 title: Crackme vol1 -- 01-acid-burn
-categories: [reverse-chal, crackme]
+categories: [idea&try, reverse-chal, crackme]
 tags: [reverse, crackme, windows]
 ---
 逛吾爱破解论坛的时候，找到了crackme大礼包，决定练习一下。虽然现在ai时代，逆向基本不用交给人做了，但是我觉得还是有必要学习一些逆向思路，以及提高对工具的使用能力. 

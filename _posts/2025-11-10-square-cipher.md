@@ -1,6 +1,6 @@
 ---
 title: BuckeyCTF - square cipher
-categories: [ctf2025, buckeyCTF]
+categories: [ctf, vol-2025, buckeyCTF]
 tags: [reverse, z3]
 ---
 

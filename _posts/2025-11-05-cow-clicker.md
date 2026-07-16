@@ -1,6 +1,6 @@
 ---
 title: v1tCTF - cow clicker
-categories: [ctf2025, v1tCTF]
+categories: [ctf, vol-2025, v1tCTF]
 tags: [reverse, web, misc, new-format]
 ---
 
