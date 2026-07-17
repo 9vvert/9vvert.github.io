@@ -1,5 +1,5 @@
 ---
-title: Game Reverse - Achieve Financial Freedom in Vampire Survivors
+title: Achieve Financial Freedom in Vampire Survivors - Part1
 categories: [idea&try, GameReverse]
 tags: [game, cheat-engine]
 ---
