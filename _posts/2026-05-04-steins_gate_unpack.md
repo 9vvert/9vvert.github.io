@@ -1,6 +1,6 @@
 ---
-title: Game Reverse - Steins;Gate Unpack 
-categories: [GameReverse]
+title: Steins;Gate Resources Unpack 
+categories: [idea&try, GameReverse]
 tags: [game, tool]
 ---
 

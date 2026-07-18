@@ -1,6 +1,6 @@
 ---
 title: whyCTF - HackerEventDB
-categories: [ctf2025, whyCTF]
+categories: [ctf, vol1-2025, whyCTF]
 tags: [reverse, vm]
 ---
 ### 0x1 程序初探

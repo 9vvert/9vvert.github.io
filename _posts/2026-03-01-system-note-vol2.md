@@ -1,7 +1,7 @@
 ---
 title: System Misc Note - Vol2
-categories: [note, syste,]
-tags: [note, system]
+categories: [sys-note, misc]
+tags: [sys-note, system]
 ---
 
 ### 用patchelf设置binary路径

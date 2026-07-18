@@ -1,7 +1,7 @@
 ---
 title: System Misc Note - Vol3
-categories: [note, system]
-tags: [note, system]
+categories: [sys-note, misc]
+tags: [sys-note, system]
 ---
 
 ### aur缓存
@@ -274,6 +274,7 @@ sudo modprobe vmnet
 无错误。
 重启后VMWare网络正常工作
 
+<<<<<<< HEAD
 ### 查看占用某个端口的进程
 使用`lsof`，注意加sudo,否则可能无法正常执行.
 ```
@@ -281,3 +282,21 @@ $ sudo lsof -i tcp:8080
 COMMAND      PID USER FD   TYPE  DEVICE SIZE/OFF NODE NAME
 VBoxHeadl 196742  woc 19u  IPv4 1345432      0t0  TCP *:http-alt (LISTEN)
 ```
+=======
+### vultr代理服务器失效排查
+某天我的代理服务器突然失效了，起初怀疑是被校园网封ip了，但是切换成流量发现也ping不通，因此也无法ssh登录。
+
+在vultr instance界面可以开启一个终端，执行tcpdump，监听icmp包：
+```
+sudo tcpdump -ni any icmp
+```
+然后在我的本机开始ping, 看到服务器端有一些 in / out, 证明服务器能够正常接受并发包，但是其流量发不过来.
+
+在本机用下列命令查看本地的公网ip:
+```
+curl -4 ifconfig.me
+```
+经过对比，确实就是服务器中reply的目的地址，没有发错.
+
+大概率是ip被墙了
+>>>>>>> 5321d8c22a3a210bc10943569efdd128271a8b68

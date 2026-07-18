@@ -5,7 +5,6 @@ tags: [pwn, BROP]
 ---
 
 这学期《网络空间安全导论》中，我选择了BROP实验，以前只在ctf wiki上见过它的名字，趁这个机会实践一下.
-
 ### 环境搭建step1: vagant部署带特定版本nginx的虚拟机
 刚开始想用Docker搭，但是环境毕竟太老了，用源码编译会爆各种各样的问题。后来发现了 [kitctf/nginxpwn](https://github.com/kitctf/nginxpwn) 这个仓库，它提供了预编译好的nginx二进制文件（感觉这种上古漏洞的复现还是直接拿现成binary搭环境才行啊qwq）
 

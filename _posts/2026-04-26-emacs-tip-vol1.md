@@ -1,6 +1,6 @@
 ---
 title: Emacs in nixos 101 - (1) Install and Basic Setting
-categories: [system, emacs]
+categories: [sys-note, NixOS]
 tags: [emacs, tool]
 ---
 

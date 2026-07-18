@@ -1,6 +1,6 @@
 ---
 title: Blog Management Tips - 1
-categories: [tips, blog]
+categories: [sys-note, misc]
 tags: [trick, blog]
 ---
 
