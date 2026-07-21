@@ -1,5 +1,5 @@
 ---
-title: Achieve Financial Freedom in Vampire Survivors - Part1
+title: Achieve Financial Freedom in Vampire Survivors, Part1 - write CE script & locate key value
 categories: [idea&try, GameReverse]
 tags: [game, cheat-engine]
 ---
@@ -27,7 +27,7 @@ tags: [game, cheat-engine]
 
 ![](/assets/img/2026/vampire_locate.png)
 
-老实说，一开始我看前三个内存对应同样的数据，还以为这一定就是加密的金币了。但是为了保险期间，还是把5个全部加进去了，结果最后...金币还真不在前三个之中！（当然这是后话了）
+老实说，一开始我看前三个内存对应同样的数据，还以为这一定就是加密的金币了。但是为了保险起见，还是把5个全部加进去了，结果最后...金币还真不在前三个之中...（当然这是后话了）
 
 ### 0x02 编写CE脚本进行批量化监控
 其实我一开始并不是通过商店操作来进行定位的，而是尝试找单局游戏新增的金币，所以选择了莫利塞那张地图，但是最后还是剩了20个候选地址，这种情况下，在我们每次手动设置"Find out what writes to this address"之后，都需要重新进入游戏来执行一次改变金钱的操作，然后回去继续分析pc, 实在是太过麻烦。
@@ -434,7 +434,7 @@ end
 ```
 
 丢给ai分析，给出的头号嫌疑犯是5号，并让我检查`esi`是否是商品售价，而`[rax+0x94]`是拥有的金币.
-```txt
+```
    7FFBD93EB0EC - F3 0F10 80 94000000  - movss xmm0,[rax+00000094]
    7FFBD93EB0F4 - 66 0F6E CE  - movd xmm1,esi
    7FFBD93EB0F8 - 0F5B C9  - cvtdq2ps xmm1,xmm1
@@ -462,4 +462,4 @@ end
 
 虽然这个游戏其实并没有用到数据加密，但我第一次尝试了CE脚本的编写方法，完全能够自动化处理数据加密、更多候选地址的情况.
 
-未完待续, 我将在下一篇blog完成完整外挂工具的编写.
+未完待续, 我将在后面的几篇blog中完成外挂工具的编写.
