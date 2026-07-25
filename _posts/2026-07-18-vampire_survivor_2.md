@@ -1175,7 +1175,9 @@ cmake -S . -B build \
 下面会创建一个名叫`xTCL`的静态库，并设置别名 "xTCL:xTCL".
 
 > cmake中通过add_library来添加一个库，默认是STATIC
+>
 > STATIC：静态库（Linux 下是 .a，Windows 下是 .lib）
+>
 > SHARED：动态库/共享库（Linux 下是 .so，Windows 下是 .dll，macOS 下是 .dylib
 {: .prompt-info }
 
