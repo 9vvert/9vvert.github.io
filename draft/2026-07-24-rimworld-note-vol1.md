@@ -1,6 +1,6 @@
 ---
 title: Game Diary - Rimworld vol1
-categories: [game, vol2-2026]
+categories: [game, diary]
 tags: [diary, game]
 ---
 
