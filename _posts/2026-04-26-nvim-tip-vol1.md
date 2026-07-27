@@ -1,6 +1,6 @@
 ---
 title: Nvim diary - Lsp, and... mason?
-categories: [sys-note, tool-2]
+categories: [note, tool-2]
 tags: [vim, tool]
 ---
 

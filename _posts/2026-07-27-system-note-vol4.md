@@ -1,7 +1,7 @@
 ---
 title: System Misc Note - Vol4
-categories: [sys-note, misc]
-tags: [sys-note, system]
+categories: [note, system]
+tags: [note, system]
 ---
 
 ### Use journalctl to inspect daemon log
