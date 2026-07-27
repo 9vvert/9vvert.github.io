@@ -76,7 +76,7 @@ Jul 27 00:12:04 nixos systemd[1]: dae.service: Consumed 582ms CPU time, 153.8M m
 {: .prompt-info }
 
 
-Ah... it is just because wrong config file. After fixing it and rebooting, everything is back to normal.
+Ah... it is just because of wrong config file. After fixing it and rebooting, everything is back to normal.
 
 ### Set 'prefer-no-csd' of niri
 After I install `Prism Launcher` and started playing minecraft, it came out that there was always a disturbing bar at top, and the bottom of origin window was crowded out of screen.
@@ -115,8 +115,8 @@ Window ID 85:
     Window offset in tile: 0 x 0
 ```
 
-Okay, obviously it had extra 25px after some event, which cause niri to re-calculate window size. 
+Okay, obviously there were extra 25px after click event, which caused niri to re-calculate window size. 
 
-The solution is: turn on `prefer-no-csd` in niri. (In NixOS, it is ``programs.niri.settings.prefer-no-csd = true`).
+The solution is: turn on `prefer-no-csd` in niri. (In NixOS, it is `programs.niri.settings.prefer-no-csd = true`).
 
 But note that the change of niri often needs logout & login again to take effect. Then the top bar is finally gone. Gooooood!
