@@ -274,7 +274,6 @@ sudo modprobe vmnet
 无错误。
 重启后VMWare网络正常工作
 
-<<<<<<< HEAD
 ### 查看占用某个端口的进程
 使用`lsof`，注意加sudo,否则可能无法正常执行.
 ```
@@ -282,7 +281,6 @@ $ sudo lsof -i tcp:8080
 COMMAND      PID USER FD   TYPE  DEVICE SIZE/OFF NODE NAME
 VBoxHeadl 196742  woc 19u  IPv4 1345432      0t0  TCP *:http-alt (LISTEN)
 ```
-=======
 ### vultr代理服务器失效排查
 某天我的代理服务器突然失效了，起初怀疑是被校园网封ip了，但是切换成流量发现也ping不通，因此也无法ssh登录。
 
@@ -299,4 +297,3 @@ curl -4 ifconfig.me
 经过对比，确实就是服务器中reply的目的地址，没有发错.
 
 大概率是ip被墙了
->>>>>>> 5321d8c22a3a210bc10943569efdd128271a8b68
