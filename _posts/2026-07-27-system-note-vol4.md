@@ -77,3 +77,46 @@ Jul 27 00:12:04 nixos systemd[1]: dae.service: Consumed 582ms CPU time, 153.8M m
 
 
 Ah... it is just because wrong config file. After fixing it and rebooting, everything is back to normal.
+
+### Set 'prefer-no-csd' of niri
+After I install `Prism Launcher` and started playing minecraft, it came out that there was always a disturbing bar at top, and the bottom of origin window was crowded out of screen.
+
+![](/assets/img/2026/minecraft_topbar.png)
+
+At first I use niri's `mod + shift + f` to make it fullscreen. It only works temporarily, however. Once I click some button in the game, the fucking top bar appears again.
+
+Use `niri msg windows` to inspect. After niri fullscreen:
+```
+Window ID 85:
+  Title: "Minecraft 26.2 - Singleplayer"
+  App ID: "Minecraft 26.2"
+  Is floating: no
+  PID: 1493
+  Workspace ID: 1
+  Layout:
+    Tile size: 1536 x 960
+    Scrolling position: column 5, tile 1
+    Window size: 1536 x 960
+    Window offset in tile: 0 x 0
+```
+
+After click a button in game:
+```
+Window ID 85:
+  Title: "Minecraft 26.2 - Singleplayer"
+  App ID: "Minecraft 26.2"
+  Is floating: no
+  PID: 1493
+  Workspace ID: 1
+  Layout:
+    Tile size: 1536 x 984.80
+    Scrolling position: column 5, tile 1
+    Window size: 1536 x 985
+    Window offset in tile: 0 x 0
+```
+
+Okay, obviously it had extra 25px after some event, which cause niri to re-calculate window size. 
+
+The solution is: turn on `prefer-no-csd` in niri. (In NixOS, it is ``programs.niri.settings.prefer-no-csd = true`).
+
+But note that the change of niri often needs logout & login again to take effect. Then the top bar is finally gone. Gooooood!
