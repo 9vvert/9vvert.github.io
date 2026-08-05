@@ -120,3 +120,19 @@ Okay, obviously there were extra 25px after click event, which caused niri to re
 The solution is: turn on `prefer-no-csd` in niri. (In NixOS, it is `programs.niri.settings.prefer-no-csd = true`).
 
 But note that the change of niri often needs logout & login again to take effect. Then the top bar is finally gone. Gooooood!
+
+### coredumpctl
+
+When encountering program crash, we can use `coredumpctl` to view log.
+
+```
+coredumpctl list --since "2026-07-30 12:06:30"
+```
+
+Check the real log (optional: `--no-page`):
+
+```
+coredumpctl info isaac.x64
+coredumpctl info <pid>
+```
+
