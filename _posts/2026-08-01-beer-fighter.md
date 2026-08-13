@@ -184,7 +184,7 @@ retn
 
 那么，我们只能控制rbp了. 因为在函数中引用数据是通过它来实现的，所以我们要跳过开头的`pushd`部分，这样就能控制了.
 
-```asm
+```
 .text:000000000040017C ; Attributes: bp-based frame
 .text:000000000040017C
 .text:000000000040017C new_comer       proc near               ; CODE XREF: start+B↓p

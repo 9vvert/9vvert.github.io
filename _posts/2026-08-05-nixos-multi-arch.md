@@ -329,7 +329,7 @@ lrwxrwxrwx 1 root root   121 Jan  1  1970 aarch64-unknown-linux-gnu-strings -> /
 > ......
 > ```
 >
-> Binaries in NixOS has an interpreter pinned to the exact version ld-linux-x86-64.so.2 .
+> Binaries in NixOS has an interpreter pinned to ld-linux-x86-64.so.2 with the certain version.
 >
 {: .prompt-info }
 
@@ -632,13 +632,13 @@ in
 }
 ```
 
-- `AARCH64_BIN`
+- `AARCH64_BIN`:
    has some binutils.
-- `AARCH64_LIBC` 
+- `AARCH64_LIBC` :
    root of glibc. the libs are placed in `$AARCH64_LIBC/lib`.
-- `AARCH64_INTERP`
+- `AARCH64_INTERP`:
    dynamic loader.
-- `AARCH64_GCC_LIB`
+- `AARCH64_GCC_LIB`:
    root of gcc lib. the libs are placed in `$AARCH64_GCC_LIB/lib`.
 
 
@@ -647,6 +647,6 @@ Now we can run it with `-L`, which specify the guest filesystem root:
 ```
 ~/ctf (zsh)
 [woc@nixos]> qemu-aarch64 -L $AARCH64_LIBC ./koori
-Please send your input :) fff
+Please send your input :) abcdef
 Your input has been validated :D
 ```
