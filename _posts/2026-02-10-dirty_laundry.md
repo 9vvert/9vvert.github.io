@@ -1,6 +1,6 @@
 ---
 title: pragyanCTF - dirty_laundry
-categories: [ctf, vol1-2026, pragyanCTF]
+categories: [CTF, ctf-2026, pragyanCTF]
 tags: [pwn, ret2libc]
 ---
 

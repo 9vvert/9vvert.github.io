@@ -1,6 +1,6 @@
 ---
 title: Game Diary - vol1
-categories: [game, diary-2]
+categories: [Game, game-diary]
 tags: [diary, game]
 ---
 

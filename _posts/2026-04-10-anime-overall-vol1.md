@@ -1,6 +1,6 @@
 ---
 title: Anime Review - Vol1
-categories: [Anime, review]
+categories: [Anime, anime-review]
 tags: [anime, note]
 ---
 记录我个人对一些看过的番的感受（评分仅代表个人喜爱程度，与作品质量无关. 日常番在我这里的得分会偏高一些）

@@ -1,6 +1,6 @@
 ---
 title: ehaxCTF - revenge-womp-womp
-categories: [ctf, vol1-2026, ehaxCTF]
+categories: [CTF, ctf-2026, ehaxCTF]
 tags: [pwn, heap, large-bin, unlink, ORW]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: tfcCTF - custom.ttf
-categories: [ctf, vol1-2025, TFCCTF]
+categories: [CTF, ctf-2025, TFCCTF]
 tags: [reverse, misc, new-format]
 ---
 

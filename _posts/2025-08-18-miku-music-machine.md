@@ -1,6 +1,6 @@
 ---
 title: sekaiCTF - Miku Music Machine 
-categories: [ctf, vol1-2025, sekaiCTF]
+categories: [CTF, ctf-2025, sekaiCTF]
 tags: [reverse, xfg-protect, maze]
 ---
 

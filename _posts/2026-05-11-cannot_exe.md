@@ -1,6 +1,6 @@
 ---
 title: BreakTheSyntaxCTF - You cannot exe
-categories: [ctf, vol1-2026, BreakTheSyntaxCTF]
+categories: [CTF, ctf-2026, BreakTheSyntaxCTF]
 tags: [pwn, stack-pivot, rop]
 ---
 

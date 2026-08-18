@@ -1,5 +1,5 @@
 ---
 title: BreakTheSyntaxCTF - You cannot rce
-categories: [ctf, vol1-2026, BreakTheSyntaxCTF]
+categories: [CTF, ctf-2026, BreakTheSyntaxCTF]
 tags: [pwn]
 ---

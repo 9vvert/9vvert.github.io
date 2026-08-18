@@ -1,6 +1,6 @@
 ---
 title: BuckeyCTF - befuddled
-categories: [ctf, vol1-2025, buckeyCTF]
+categories: [CTF, ctf-2025, buckeyCTF]
 tags: [reverse, vm, unicorn, gdb]
 ---
 
