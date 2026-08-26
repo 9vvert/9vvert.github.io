@@ -490,6 +490,7 @@ on(press){
 发现触发条件是点击特定按钮，这些按钮都非常非常小，藏在特定场景中。不解包的话想集齐会相当折磨吧...
 
 收集所有bird, 拿到金蛋：
+
 ![](/assets/img/2026/daymare_town_golden_egg.png)
 
 释放prisoner, 这也就是游戏的secret:
