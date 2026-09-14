@@ -275,6 +275,7 @@ This may happen, for example, if you have a configuration similar to
 ```
 
 > ## What is lib.mkForce
+> 
 > We can add some value after `lib.mkForce`, which means "When activating, overwrite an existing filesystem file > instead of refusing because it would be clobbered."
 > 
 > Example:
@@ -354,8 +355,9 @@ Now come back to the initial warning. It comes from an already existing `setting
 
 So a direct solution is: check that file, migrate and then delete it.
 
-### Fix Touchpad 
-There was a time when my touchpad was disabled.
+### Fix touchpad malfuntion
+
+My touchpad didn't work.
 
 Use `libinput` to check devices:
 
