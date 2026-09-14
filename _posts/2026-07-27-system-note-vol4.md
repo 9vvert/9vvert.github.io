@@ -136,3 +136,279 @@ coredumpctl info isaac.x64
 coredumpctl info <pid>
 ```
 
+### config vscode in nixos
+
+We can use `programs.vscode.profiles.default` to manage extensions and userSettings.
+
+```nix
+{pkgs, inputs, lib, ...}:
+
+{
+  programs.vscode = {
+    enable = true;
+    profiles.default={
+      extensions = with pkgs.vscode-extensions; [
+        dracula-theme.theme-dracula
+        yzhang.markdown-all-in-one
+      ];
+
+      userSettings = {
+        "window.restoreWindows" = "none";
+        "[python]" = {
+          "diffEditor.ignoreTrimWhitespace" = false;
+          "editor.defaultColorDecorators" = "never";
+        };
+      };
+    };
+  };
+
+
+}
+```
+
+But this will report below info during build:
+
+```
+Please do one of the following:
+- In standalone mode, use 'home-manager switch -b backup' to back up files automatically.
+- When used as a NixOS or nix-darwin module, set either
+  - 'home-manager.backupFileExtension', or
+  - 'home-manager.backupCommand',
+  to move the file to a new location in the same directory, or run a custom command.
+- Set 'force = true' on the related file options to forcefully overwrite the files below. eg. 'xdg.configFile."mimeapps.list".force = true'
+Existing file '/home/woc/.config/Code/User/settings.json' would be clobbered
+```
+
+- try1
+
+```nix
+  # xdg.configFile is like home.file.".config"
+  xdg.configFile."Code/User/settings.json" = {
+    force = true;
+  };
+
+  # # Or the following way:
+  # xdg.configFile."Code/User/settings.json".force = lib.mkForce true;
+```
+
+output:
+```
+  error: The option `xdg.configFile."Code/User/settings.json".source' was accessed but has no value defined. Try setting the option.
+```
+
+Once we check the src of vscode nix module, we will find that it just defines `home.file`. 
+
+```nix
+# home-manager/blob/master/modules/programs/vscode/mkVscodeModule.nix
+  home.file = lib.mkMerge (
+    ......
+  )
+```
+
+Even if `xdg.confgFile` points to the same dir as `home.file.".config"`, they are not merged during build. 
+
+So the fact is, we barely make an isolated file option, without setting neither its text nor source:
+
+```
+xdg.configFile."Code/User/settings.json" = {
+  force = true;
+};
+```
+
+> ## file-management in nixos
+>
+> ### file surffix
+>
+> 1. environment.etc."myfile" is `/etc/myfile`
+>
+> 2. home.file."myfile" is `/etc/myfile`
+>
+> 3. xdg.configFile."myfile" is `~/.config/myfile`
+>
+> ### file content
+>
+> 1. text
+>
+> ```
+> xdg.configFile."myapp/config".text = ''
+>   foo = bar
+> '';
+> ```
+>
+> 2. src
+>
+> home.file.".config/foo".source = ./foo;
+{: .prompt-info }
+
+
+- try2:
+
+What about trying `home.file` ?
+
+```nix
+  home.file.".config/Code/User/settings.json" = lib.mkForce {
+    force = true;
+  };
+```
+
+output:
+```
+error:
+Failed assertions:
+- Conflicting managed target files: .config/Code/User/settings.json
+
+This may happen, for example, if you have a configuration similar to
+
+    home.file = {
+      conflict1 = { source = ./foo.nix; target = "baz"; };
+      conflict2 = { source = ./bar.nix; target = "baz"; };
+    }       error:
+Failed assertions:
+- Conflicting managed target files: .config/Code/User/settings.json
+
+This may happen, for example, if you have a configuration similar to
+
+    home.file = {
+      conflict1 = { source = ./foo.nix; target = "baz"; };
+      conflict2 = { source = ./bar.nix; target = "baz"; };
+    }
+```
+
+> ## What is lib.mkForce
+> We can add some value after `lib.mkForce`, which means "When activating, overwrite an existing filesystem file > instead of refusing because it would be clobbered."
+> 
+> Example:
+> 
+> ```nix
+> programs.foo.enable = lib.mkForce true;
+> ```
+{: .prompt-info }
+
+
+
+You may think: since we use lib.mkForce to declare using our 'force', there shouldn't be any problem.
+
+However, that is not the case. 
+
+First, What we set with priority is not the attribute 'force', but the whole file option! That is, our file is defined in two place. 
+
+Second, check the vscode nix module:
+```nix
+  userDir =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      "${config.home.homeDirectory}/Library/Application Support/${nameShort}/User"
+    else
+      "${config.xdg.configHome}/${nameShort}/User";     
+
+  profileDir = name: "${userDir}${optionalString (name != "default") "/profiles/${name}"}";
+  configFilePath = name: "${profileDir name}/settings.json";
+  tasksFilePath = name: "${profileDir name}/tasks.json";
+  ......
+  home.file = lib.mkMerge (flatten [
+      (mkIf (cfg.argvSettings != { }) {
+        "${argvPath}".source =
+          if isPathLike cfg.argvSettings then
+            cfg.argvSettings
+          else
+            jsonFormat.generate "vscode-argv" cfg.argvSettings;
+      })
+
+      (mapAttrsToList (n: v: [
+        (
+          let
+            merged = mergedUserSettings v.userSettings v.enableUpdateCheck v.enableExtensionUpdateCheck;
+          in
+          mkIf (merged != { }) {
+            "${configFilePath n}".source =
+              if isPathLike merged then merged else jsonFormat.generate "vscode-user-settings" merged;
+          }
+        )
+
+        (mkIf (v.userTasks != { }) {
+          "${tasksFilePath n}".source =
+            if isPathLike v.userTasks then v.userTasks else jsonFormat.generate "vscode-user-tasks" v.userTasks;
+        })
+
+        ......
+      )
+    )
+    ......
+```
+It only sets `home.file.".config/Code/User/settings.json"`'s `source`, so our `lib.mkForce force` won't take effect.
+
+- try3
+
+Now we finally figure out what does `lib.mkForce` really do - not the meaning of "overwrite and merge", but "when they merge, use this one with priority".
+
+Remember that nix module will "automatically merge" some attributes at some case, can we just set `home.file.".config/Code/User/settings.json".force = true;` ?
+
+Unfortunatelly it still fails with conflict error.
+
+It is because in vscode nix module, the file path is calculated by a serial of functions. Although it eventually points to the same file, they are not viewed as two parts that can be merged.
+
+
+
+**SUMMARY**
+
+Now come back to the initial warning. It comes from an already existing `settings.json`, because it is my first time using nix module to generate its settings.json. 
+
+So a direct solution is: check that file, migrate and then delete it.
+
+### Fix Touchpad 
+There was a time when my touchpad was disabled.
+
+Use `libinput` to check devices:
+
+```
+...
+Device:                  Intel HID events
+Kernel:                  /dev/input/event3
+Id:                      host:0000:0000
+Group:                   6
+Seat:                    seat0, default
+Capabilities:            keyboard
+Tap-to-click:            n/a
+Tap-and-drag:            n/a
+Tap button map:          n/a
+Tap drag lock:           n/a
+Left-handed:             n/a
+Nat.scrolling:           n/a
+Middle emulation:        n/a
+Calibration:             n/a
+Scroll methods:          none
+Scroll button:           n/a
+Scroll button lock:      n/a
+Click methods:           none
+Clickfinger button map:  n/a
+Disable-w-typing:        n/a
+Disable-w-trackpointing: n/a
+Accel profiles:          n/a
+Rotation:                0.0
+Area rectangle:          n/a
+...
+```
+
+Use `journalctl -b` to check log during this boot:
+
+```
+> journalctl -b | grep -iE 'touchpad|libinput|i2c|hid'
+Sep 14 11:11:42 nixos kernel: hid: raw HID events driver (C) Jiri Kosina
+Sep 14 11:11:42 nixos kernel: usbcore: registered new interface driver usbhid
+Sep 14 11:11:42 nixos kernel: usbhid: USB HID core driver
+Sep 14 11:11:42 nixos kernel: hid-generic 0003:1C4F:0034.0001: input,hidraw0: USB HID v1.10 Mouse [SIGMACHIP Usb Mouse] on usb-0000:00:14.0-4/input0
+Sep 14 11:11:45 nixos kernel: input: Intel HID events as /devices/platform/INTC1070:00/input/input3
+Sep 14 11:11:45 nixos kernel: intel-hid INTC1070:00: platform supports 5 button array
+Sep 14 11:11:45 nixos kernel: input: Intel HID 5 button array as /devices/platform/INTC1070:00/input/input4
+Sep 14 11:11:45 nixos kernel: i2c i2c-0: Successfully instantiated SPD at 0x50
+Sep 14 11:11:45 nixos kernel: i2c_hid_acpi i2c-FTCS0038:00: unexpected HID descriptor bcdVersion (0x7878)
+Sep 14 11:11:45 nixos kernel: i2c_hid_acpi i2c-FTCS0038:00: Failed to fetch the HID Descriptor
+Sep 14 11:11:46 nixos systemd-logind[840]: Watching system buttons on /dev/input/event3 (Intel HID events)
+Sep 14 11:11:46 nixos systemd-logind[840]: Watching system buttons on /dev/input/event4 (Intel HID 5 button array)
+Sep 14 11:26:33 nixos sudo[10391]:      woc : TTY=pts/1 ; PWD=/home/woc/nixos-config ; USER=root ; COMMAND=/nix/store/h75hn4mbiz92khw1iqc8ymfyfh0j4fsy-libinput-1.31.3-bin/bin/libinput list-devices
+```
+
+Google "Failed to fetch the HID Descriptor" and find one solution: shutdown with power button. 
+
+> https://forum.manjaro.org/t/touchpad-not-detected-i2c-hid-acpi-i2c-msft0001-failed-to-fetch-the-hid-descriptor/119311
+
+I have tried reboot command before, which didn't fix the issue. But this new method worked.
