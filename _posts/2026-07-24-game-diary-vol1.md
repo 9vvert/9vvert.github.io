@@ -95,7 +95,7 @@ tags: [diary, game]
 
 接着是失温症、瘟疫接踵而至，死去了两个小人，接着他们的尸体继续被其他人吃掉。实在是太疯狂了！
 
-![](/assets/game/rimworld_9_16_5jpg)
+![](/assets/game/rimworld_9_16_5.jpg)
 
 ![](/assets/game/rimworld_9_16_6.jpg)
 
