@@ -1,9 +1,73 @@
 ---
-title: Flash小游戏《小镇的秘密》下载与反编译分析.
-categories: [idea&try, GameReverse]
-tags: [game, web]
+title: Bilibili播放器悬浮文字去除
+categories: [idea&try, web]
+tags: [web]
 ---
 
+最近在看《Angel beats!》，但是我经常想要截图，首先首先用了Power Toys这个工具 + ShareX，让`Win+P`映射到`LAlt+PrintScreen`, 实现对当前focus屏幕的截屏。
+
+后来我发现可以按d来切换弹幕的开关，这固然是很好的，只是会有几秒钟的时间悬浮“开启弹幕”/“关闭弹幕”之类的文字，影响我截图了！
+
+这应该是前端行为，尝试进行去除.
+
+### 0x01 定位Event listener
+对在debugger中下Event Listener断点，选择`Keyboard`. 接着按下d, 触发了断点(通过观察，弹幕的开关是在按下的一瞬间发动的，排除KeyUp; 再独立实验可以发现负责捕获弹幕开关快捷键的是KeyDown Listener).
+
+> **KeyPress, KeyDown, KeyUp**
+> 
+> KeyPress当按下字符键时触发（不包括控制按键）
+> 
+> KeyDown当按下任意字符时触发
+> 
+> KeyPress当松开任意按键时触发
+{: .prompt=info }
+
+```js
+h.useEffect)( () => {
+                var e = e => {
+                    if (!((t = e.target && e.target.tagName) && ["input", "textarea", "select"].indexOf(t) >= 0) && (null === (a = e.target) || void 0 === a || !a.isContentEditable) && e.key) {
+                        var t, a, l = e.key.toLowerCase();
+                        i.indexOf(l) >= 0 && "" === o.current && (o.current = l,
+                        r.current = window.setTimeout( () => {
+                            r.current = null,
+                            o.current && n.onStart(o.current)
+                        }
+                        , n.threshold))
+                    }
+                }
+                  , t = e => {
+                    o.current === e.key && (r.current && (n.onCancel(o.current),
+                    clearTimeout(r.current),
+                    r.current = null),
+                    n.onFinish(o.current),
+                    o.current = "")
+                }
+                ;
+                return document.addEventListener("keyup", t),
+                document.addEventListener("keydown", e),
+                () => {
+                    document.removeEventListener("keyup", t),
+                    document.removeEventListener("keydown", e)
+                }
+            }
+            ...
+```
+
+接着按几个Continue就会触发开关弹幕的效果. 但是目前这样的定位还太宽泛，需要继续向内减小范围.
+
+**方法1**：观察到keylistener的最后一个断点（也就是出现悬浮文字前的一个断点）：
+
+```js
+i.shortcutHandler = function(t) {
+                !t || !t.keyCode || this.mediaStore.video.controls || this.rootPlayer.disabled.shortcut || this.portStore.hasEditableFocus() || (this.shortcutKeysCombineShift(t),
+                t.shiftKey || t.metaKey || t.altKey || t.ctrlKey || (this.portStore.hasFocus() && this.shortcutKeysInFocus(t),
+                this.shortcutKeysGlobal(t)))
+            }
+```
+
+进入`shortcutKeysGlobal`, 发现就是处理函数.
+
+**方法2**：调试的时候发现KeyCode是68 (`D`), 全局搜索" 68"
 
 ```js
                 case 68:
@@ -18,6 +82,15 @@ tags: [game, web]
                     }
                     break;
 ```
+
+**方法3**：全局搜索"开启弹幕"，“关闭弹幕”
+
+同上.
+
+
+按下快捷键后，通过`toggleDmSwitch`实现弹幕开关，而悬浮文字则是通过`shortcutTooltip`实现的.
+
+### 0x02 分析悬浮文字逻辑
 
 找 this.shortcutTooltip的定义.
 
@@ -97,6 +170,7 @@ i.shortcutTooltip = function(t, e) {
 ```
 create : ƒ u() isMobxAction : true length : 0 name : "create" prototype : {} arguments : (...) caller : (...) [[FunctionLocation]] : VM41 core.8a3d87a9.js:1 [[Prototype]] : ƒ () [[Scopes]] : Scopes[6]
 ```
+
 接着点击定位function location.
 
 ```js
@@ -122,23 +196,20 @@ function ts(n, r, i, o, u) {
 	}
 }
 ```
+
 混淆的代码，追踪到后面就很难手工分析了.
 
 
-
-```
-或者用控制台方法：
-
-如果在控制台先输入一次`const ts = this.tooltipStore` (显示undefined正常，因为const赋值语句本来就会返回undefined),  但是下一次再输入ts会显示undefined, 是因为前面的ts作用域已经结束.
-
-可以用 globalThis.ts = ...， 可以跨越多次命令求解.
-
-输入ts.create，显示
-ƒ u(){return ts(n,i,r,o||this,arguments)}
-```
-
-
-
+> 或者用控制台方法：
+> 
+> 如果在控制台先输入一次`const ts = this.tooltipStore` (显示undefined正常，因为const赋值语句本来就会返回undefined),  但是下一次再输入ts会显示undefined, 是因为前面的ts作用域已经结束.
+> 
+> 可以用 `globalThis.ts = this.tooltipStore`， 可以在命令结束后不销毁`ts`的值
+> 
+> 输入`ts.create`，显示
+> 
+> ƒ u(){return ts(n,i,r,o||this,arguments)}
+{: .prompt-tip }
 
 ta是MobX action wrapper，AI说里面比较重要的是records,
 
@@ -229,9 +300,232 @@ set title: ƒ (r)
 [[Prototype]]: Object
 ```
 
+果然出现了“开启弹幕”文字.
 
-现在开始着手屏蔽.
-AI查找相关资料，从DOM层能确定最终屏蔽的对象是`.bpx-player-tooltip-area` (TODO)
+### 0x03 编写油猴脚本进行屏蔽
+
+要控制`this.shortcutTooltip`的行为，就要先找到这里的`this`是什么对象，追踪到它在DOM对应的元素.
+
+在处理函数的开头位置，有`var e = this`. 不过经过查阅资料，js中的`this`并不是在定义时决定的，而是在运行时动态绑定的。也就是说，通常指向调用者对象.
+
+```js
+ i.shortcutKeysGlobal = function(t) {
+                var e = this
+                  , i = L[t.keyCode];
+                switch (t.keyCode) {
+                case 27:
+                    ......
+```
+
+回到上一层，果然是通过`this.xxx`调用的. 而这个function又是通过`i.shortcutHandler`定义的，所以`this`指向`i`.
+
+```js
+i.shortcutHandler = function(t) {
+                !t || !t.keyCode || this.mediaStore.video.controls || this.rootPlayer.disabled.shortcut || this.portStore.hasEditableFocus() || (this.shortcutKeysCombineShift(t),
+                t.shiftKey || t.metaKey || t.altKey || t.ctrlKey || (this.portStore.hasFocus() && this.shortcutKeysInFocus(t),
+                this.shortcutKeysGlobal(t)))
+            }
+```
+
+继续找到`var i = e.prototype;`
+
+```js
+96561: function(t, e, i) {
+        var n, a = i(5425), o = i(20341), s = i(42900), r = i(77380), l = i(34191), c = i(93045), h = i(85216), p = i(81851), d = i(10608), u = i.n(d), m = i(48711), f = i(92336), x = i.n(f), A = i(75540), g = i.n(A), y = i(76442), v = i.n(y), b = i(27017), k = i(74808), w = i(82343), S = i(22042), C = i(43827), E = i(15518), P = i(76239), B = i(64453), D = i(79788), T = ((n = T || {}).KeyF = "KeyF",
+        n.KeyD = "KeyD",
+        n.KeyM = "KeyM",
+        n.KeyQ = "KeyQ",
+        n.KeyW = "KeyW",
+        n.KeyE = "KeyE",
+        n.KeyR = "KeyR",
+        n.Enter = "Enter",
+        n.Space = "Space",
+        n.Escape = "Escape",
+        n.ArrowUp = "ArrowUp",
+        n.ArrowDown = "ArrowDown",
+        n.ArrowLeft = "ArrowLeft",
+        n.ArrowRight = "ArrowRight",
+        n.BracketLeft = "BracketLeft",
+        n.BracketRight = "BracketRight",
+        n.Shift1 = "Shift1",
+        n.Shift2 = "Shift2",
+        n.Digit1 = "Digit1",
+        n.Digit2 = "Digit2",
+        n.Digit3 = "Digit3",
+        n.Digit4 = "Digit4",
+        n.Tab = "Tab",
+        n.KeyG = "KeyG",
+        n), L = {
+            49: "Digit1",
+            50: "Digit2",
+            51: "Digit3",
+            52: "Digit4",
+            70: "KeyF",
+            68: "KeyD",
+            77: "KeyM",
+            81: "KeyQ",
+            87: "KeyW",
+            69: "KeyE",
+            82: "KeyR",
+            13: "Enter",
+            32: "Space",
+            27: "Escape",
+            38: "ArrowUp",
+            104: "ArrowUp",
+            40: "ArrowDown",
+            98: "ArrowDown",
+            37: "ArrowLeft",
+            100: "ArrowLeft",
+            39: "ArrowRight",
+            102: "ArrowRight",
+            219: "BracketLeft",
+            221: "BracketRight",
+            Shift1: "Shift1",
+            Shift2: "Shift2",
+            9: "Tab",
+            71: "KeyG"
+        }, _ = p.rg.length, H = function(t) {
+            function e() {
+                var t;
+                return (0,
+                o._)(this, e),
+                t = (0,
+                a._)(this, e, arguments),
+                t.threePlayrateActiveIndex = 0,
+                t.threePlayrateCarouselPos = 1,
+                t.threePlayrateRehome = null,
+                t.threePlayrateRehomeTimer = 0,
+                t.threePlayrateActive = !1,
+                t.threePlayrateLastStepAt = 0,
+                t.threePlayrateSessionRate = p.e_.Uninit,
+                t.threePlayrateStepped = !1,
+                t
+            }
+            (0,
+            l._)(e, t);
+            var i = e.prototype;
+    ......
+```
+
+接着发现`96561: function(t, e, i)`的参数t需要进一步追踪... 这样追踪太慢了.
+
+在查看stack的时候发现目标对象有下列属性：
+
+```
+container: "div.bpx-player-container"
+```
+
+这是一个css selector. 
+
+控制台中输入`container = document.querySelector('div.bpx-player-container');`
+
+得到：
+
+![](/assets/img/2026/bilibili-tooltip.png)
+
+可以看到里面有一个`bpx=player-tooltip-area`的元素，不断展开.
+
+>**html, js, css的关联**
+>
+>浏览器加载html的时候，会维护一个树状结构 (DOM), 而css和js负责对DOM进行操作，实现修改html的功能.
+>
+>单独的`<div class="abc"/>`， `<div id="xyz"/>`并没有意义; 但是css/js可以操作这些元素.
+>
+>id是元素的唯一标识符，不能重复；而class则是按照功能设置的一个类似“tag”的功能，可以在多个元素中复用.
+>
+>```css
+>.xyz {
+>    color: blue;
+>    font-size: 24px;
+>}
+>
+>#abc {
+>    ......
+>}
+>```
+>
+>```js
+>document.getElementById('xyz')
+>document.querySelector('#xyz')
+>
+>document.getElementsByClassName('abc')
+>document.querySelectorAll('.abc')
+>```
+{: .prompt-info }
+
+继续在stack中看，还可以发现它有一个`nodes`属性，这代表它课
+
+```js
+nodes = {
+    advDanmaku: 'div.bpx-player-adv-dm-wrap',
+    basDanmaku: 'div.bpx-player-bas-dm-wrap',
+    bubble: 'div.bpx-player-ctrl-quality-bubble',
+    buffIcon: 'div.bpx-player-state-buff-icon',
+    buffSpeed: 'span.bpx-player-state-buff-speed',
+    buffTitle: 'span.bpx-player-state-buff-title',
+    businessWrap: 'div.bpx-player-business-wrap.business-hide',
+    cmdDanmaku: 'div.bpx-player-cmd-dm-wrap',
+    cmdInside: 'div.bpx-player-cmd-dm-inside',
+    container: 'div.bpx-player-container',
+    contextArea: 'div.bpx-player-context-area',
+    controlBottomCenter: 'div.bpx-player-control-bottom-center',
+    controlBottomLeft: 'div.bpx-player-control-bottom-left',
+    controlBottomRight: 'div.bpx-player-control-bottom-right',
+    controlEntity: 'div.bpx-player-control-entity',
+    controlTop: 'div.bpx-player-control-top',
+    controlWrap: 'div.bpx-player-control-wrap',
+    customListPanelContainer: 'div.bpx-player-ctrl-eplist-menu-wrap',
+    danmakuArea: 'div.bpx-player-render-dm-wrap',
+    dialogArea: 'div.bpx-player-dialog-area',
+    dialogWrap: 'div.bpx-player-dialog-wrap',
+    dmMaskWrap: 'div.bpx-player-dm-mask-wrap',
+    dmReportWrap: 'div.bpx-player-dm-report-wrap',
+    dmSvgMaskWrap: 'div.bpx-player-dm-svg-mask-wrap',
+    endingPanel: 'div.bpx-player-ending-panel',
+    endingWrap: 'div.bpx-player-ending-wrap',
+    loadingPanel: 'div.bpx-player-loading-panel',
+    musicWrap: 'div.bpx-player-music-wrap',
+    newDialogueArea: 'div.bpx-player-new-dialogue-area',
+    rowDanmaku: 'div.bpx-player-row-dm-wrap',
+    sendingArea: 'div.bpx-player-sending-area',
+    sendingBar: 'div.bpx-player-sending-bar',
+    sharePanel: 'div.bpx-player-share-panel',
+    stateWrap: 'div.bpx-player-state-wrap',
+    subtitleWrap: 'div.bpx-player-subtitle-wrap',
+    summaryWrap: 'div.bpx-player-summary-wrap',
+    toastAuto: 'div.bpx-player-toast-auto',
+    toastFixed: 'div.bpx-player-toast-fixed',
+    toastWrap: 'div.bpx-player-toast-wrap',
+    tooltipArea: 'div.bpx-player-tooltip-area',
+    topFollow: 'div.bpx-player-top-follow',
+    topLeftFollow: 'div.bpx-player-top-left-follow',
+    topLeftMusic: 'div.bpx-player-top-left-music',
+    topLeftPanoram: 'div.bpx-player-top-left-panorama',
+    topLeftTitle: 'div.bpx-player-top-left-title',
+    topTitle: 'div.bpx-player-top-title',
+    topWrap: 'div.bpx-player-top-wrap',
+    videoArea: 'div.bpx-player-video-area',
+    videoPerch: 'div.bpx-player-video-perch',
+    videoPoster: 'div.bpx-player-video-poster',
+    videoWrap: 'div.bpx-player-video-wrap'
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AI查找相关资料，从DOM层能确定最终屏蔽的对象是`.bpx-player-tooltip-area`
 ```
 playTooltipArea:  '.bpx-player-tooltip-area'
 playTooltipItem:  '.bpx-player-tooltip-item'
@@ -485,3 +779,119 @@ ver2: 直接隐藏，也无效:
 ```
 
 最后发现script根本没有执行，原因是需要提前在chrome://extension -> tempmonkey -> detail中勾选allow user script.
+
+
+
+
+
+
+
+
+
+
+```js
+// ==UserScript==
+// @name         Bilibili 隐藏弹幕快捷键提示
+// @namespace    http://tampermonkey.net/
+// @description  Don't show floated tips when using "d" in bilibili
+// @version      AngelBeats!
+// @match        https://www.bilibili.com/*
+// @run-at       document-start
+// @grant        none
+// ==/UserScript==
+
+(() => {
+    'use strict';
+
+    const blockedTexts = new Set([
+        '开启弹幕',
+        '关闭弹幕',
+        '精简弹幕',
+    ]);
+
+    function checkTitle(title) {
+        if (!title?.matches?.('.bpx-player-tooltip-title')) {
+            return;
+        }
+
+        const item = title.closest('.bpx-player-tooltip-item');
+        if (!item) {
+            return;
+        }
+
+        const blocked = blockedTexts.has(title.textContent.trim());
+
+        if (blocked) {
+            item.style.setProperty('display', 'none', 'important');
+        } else {
+            // Bilibili 可能复用同一个 tooltip-item，
+            // 所以显示其他提示时要撤掉我们加的 display:none。
+            if (item.style.getPropertyPriority('display') === 'important' &&
+                item.style.display === 'none') {
+                item.style.removeProperty('display');
+            }
+        }
+    }
+
+    function checkNode(node) {
+        if (!(node instanceof Element)) {
+            return;
+        }
+
+        if (node.matches('.bpx-player-tooltip-title')) {
+            checkTitle(node);
+        }
+
+        for (const title of node.querySelectorAll('.bpx-player-tooltip-title')) {
+            checkTitle(title);
+        }
+    }
+
+    function start() {
+        // 先处理已经存在的节点
+        for (const title of document.querySelectorAll('.bpx-player-tooltip-title')) {
+            checkTitle(title);
+        }
+
+        const observer = new MutationObserver(records => {
+            for (const record of records) {
+
+                // 关键：
+                // textContent = "开启弹幕" 往往表现为
+                // title 元素内部 Text Node 被替换。
+                //
+                // 所以检查 record.target，而不仅仅是 addedNodes。
+                if (record.target instanceof Element) {
+                    checkNode(record.target);
+                }
+
+                // 同时处理真正新增的 tooltip DOM
+                for (const node of record.addedNodes) {
+                    if (node instanceof Element) {
+                        checkNode(node);
+                    }
+                }
+            }
+        });
+
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+        });
+    }
+
+    if (document.documentElement) {
+        start();
+    } else {
+        new MutationObserver((_, observer) => {
+            if (document.documentElement) {
+                observer.disconnect();
+                start();
+            }
+        }).observe(document, {
+            childList: true,
+        });
+    }
+})();
+```
