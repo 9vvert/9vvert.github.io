@@ -34,3 +34,22 @@ gamescope -f -w 1920 -h 1200 -W 1920 -H 1200 -- %command%
 ```
 
 然后再选择proton启动即可.
+
+
+### nixos更新flake
+
+使用下列方式安装的codex:
+
+```nix
+{pkgs, inputs, ...}:
+
+{
+  home.packages = with pkgs; [
+    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+}
+```
+
+先用 `nix flake update codex-cli-nix`
+
+然后再rebuild.
