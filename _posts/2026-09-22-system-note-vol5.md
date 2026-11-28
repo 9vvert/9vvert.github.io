@@ -53,3 +53,71 @@ gamescope -f -w 1920 -h 1200 -W 1920 -H 1200 -- %command%
 先用 `nix flake update codex-cli-nix`
 
 然后再rebuild.
+
+
+### nixos中的namespace
+
+homemanager中提供了`config`这一namespace, 所以在homemanager下的module可以使用类似下列的方式：
+
+```nix
+{ config, ... }:
+
+{
+  home.sessionVariables = {
+    MY_CONFIG_DIR = "${config.home.homeDirectory}/.myconfig";
+  };
+}
+```
+
+常见内容：
+
+```
+config.home.username	当前用户的用户名
+config.home.homeDirectory	用户主目录
+config.home.packages	用户安装的软件包
+config.home.sessionVariables	用户环境变量配置
+config.home.sessionPath     向用户会话的PATH中添加内容
+config.home.stateVersion	Home Manager 状态版本
+config.xdg.configHome	XDG 配置目录
+config.xdg.dataHome	XDG 数据目录
+config.xdg.cacheHome	XDG 缓存目录
+config.programs	所有已声明的 programs 配置
+config.services	用户级服务配置
+config.wayland	Wayland 相关配置
+config.home.file	Home Manager 管理的用户文件
+config.systemd.user	用户级 systemd 配置
+```
+
+有时候刚刚Rebuild完，但是shell session还没有来得及更新，可以用下面的方法：
+
+```
+unset __HM_SESS_VARS_SOURCED
+source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+```
+
+`hm-session-vars.sh`中存放了session vars:
+
+```nix
+if [ -n "${__HM_SESS_VARS_SOURCED-}" ]; then return; fi
+export __HM_SESS_VARS_SOURCED=1
+
+export BROWSER="firefox"
+export EDITOR="vim"
+export ELECTRON_OZONE_PLATFORM_HINT="auto"
+export GLFW_IM_MODULE="ibus"
+export JAVA_HOME="/nix/store/g6dh2a4nr1yj342pnmw5qq6pwi61d8nq-openjdk-21.0.12.1+1"
+export LOCALE_ARCHIVE_2_27="/nix/store/8z7kcq606xak58j99r764asa2djb4hmi-glibc-locales-2.42-103/lib/locale/locale-archive"
+export NIXOS_OZONE_WL="1"
+export NPM_CONFIG_PREFIX="/home/woc/.npm-global"
+export PAGER="less"
+export SDL_IM_MODULE="fcitx"
+export STARSHIP_CONFIG="/home/woc/.config/starship.toml"
+export TERMINAL="ghostty"
+export VISUAL="vim"
+export XMODIFIERS="@im=fcitx"
+export _JAVA_AWT_WM_NONREPARENTING="1"
+export PATH="/home/woc/.npm-global/bin${PATH:+:}$PATH"
+export QT_PLUGIN_PATH="/nix/store/645f2wa2pf4ni8g0jr4avbm2ii0bmqf5-fcitx5-with-addons-5.1.19/lib/qt-6/plugins${QT_PLUGIN_PATH:+:}$QT_PLUGIN_PATH"
+```
+
+`__HM_SESS_VARS_SOURCED`标识会避免重复加载. 我们需要先将其unset然后手动加载.
